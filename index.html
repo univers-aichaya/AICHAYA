@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L'univers D'Aichaya — Bracelets, Robes & Accessoires</title>
+    <meta name="description"
+        content="Découvrez l'univers D'Aichaya : bracelets artisanaux, robes élégantes, accessoires et bien plus pour la femme moderne qui ose affirmer son style." />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+
+    <!-- ===================== LOADER ===================== -->
+    <div id="loader">
+        <div class="loader-inner">
+            <div class="loader-logo">AICHAYA</div>
+            <div class="loader-bar">
+                <div class="loader-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav id="navbar">
+        <a href="#hero" class="nav-logo">L'UNIVERS D'AICHAYA</a>
+        <ul class="nav-links" id="nav-menu">
+            <li><a href="#hero">Accueil</a></li>
+            <li><a href="#categories">Catégories</a></li>
+            <li><a href="#produits">Produits</a></li>
+            <li><a href="#apropos">À Propos</a></li>
+            <li><a href="#avis">Avis</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="nav-cart" id="cart-btn" onclick="openCart()" title="Panier" aria-label="Ouvrir le panier">
+                🛍️
+                <span class="cart-badge" id="cart-badge">0</span>
+            </button>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===================== HERO ===================== -->
+    <section id="hero">
+        <div class="hero-bg-circles">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge" style="margin-bottom:16px;">
+                <span></span>
+                Nouvelle Collection — Édition Printemps 2026
+            </div>
+            <h1 class="hero-title">
+                Bracelets, Robes &amp;<br>
+                <em>Accessoires</em><br>
+                signés Aichaya
+            </h1>
+            <p class="hero-sub">
+                Bienvenue dans l'univers d'Aichaya — des créations artisanales,
+                des robes envoûtantes et des accessoires uniques pour la femme
+                qui porte la beauté comme une signature.
+            </p>
+            <div class="hero-actions">
+                <a href="#produits" class="btn-primary">✨ Voir la Collection</a>
+                <a href="#apropos" class="btn-outline">Notre Histoire →</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-num">2<span>K+</span></div>
+                    <div class="stat-label">Clientes Satisfaites</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">500<span>+</span></div>
+                    <div class="stat-label">Produits</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">5<span>★</span></div>
+                    <div class="stat-label">Note Moyenne</div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero visual -->
+        <div class="hero-image">
+            <div class="hero-image-placeholder"><img src="ai.jpeg" alt=""></div>
+        </div>
+    </section>
+
+    <!-- ===================== CATEGORIES ===================== -->
+    <section id="categories">
+        <div id="cat-grid" class="categories-grid"></div>
+    </section>
+
+    <!-- ===================== PRODUCTS ===================== -->
+    <section id="produits">
+        <div class="products-header">
+            <div>
+                <span class="section-tag">Notre Sélection</span>
+                <h2 class="section-title">Produits Phares</h2>
+                <p class="section-desc">Des pièces choisies avec amour, qualité garantie et livraison rapide.</p>
+            </div>
+            <div class="filter-tabs" id="filter-tabs"></div>
+        </div>
+        <div class="products-grid" id="products-grid"></div>
+    </section>
+
+    <!-- ===================== PROMO BANNER ===================== -->
+    <section id="promo">
+        <div class="promo-inner">
+            <div class="promo-tag">⚡ Offre Flash du Jour</div>
+            <h2 class="promo-title">−20% sur tous les Sacs &amp; Bijoux</h2>
+            <p class="promo-sub">Profitez de nos promotions exclusives — offre valable jusqu'à minuit !</p>
+            <div class="promo-countdown">
+                <div class="countdown-item">
+                    <div class="countdown-num" id="cd-h">00</div>
+                    <div class="countdown-label">Heures</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-num" id="cd-m">00</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-num" id="cd-s">00</div>
+                    <div class="countdown-label">Secondes</div>
+                </div>
+            </div>
+            <a href="#produits" class="btn-primary" onclick="setFilter('sacs')">Profiter de l'offre →</a>
+        </div>
+    </section>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section id="apropos">
+        <div class="about-image reveal">
+            <div class="about-img-wrap">🧕🏾</div>
+            <div class="about-badge-float">
+                <div class="badge-icon">💎</div>
+                <div class="badge-val">100%</div>
+                <div class="badge-text">Artisanal</div>
+            </div>
+        </div>
+        <div class="about-content reveal">
+            <span class="section-tag">La Créatrice</span>
+            <h2 class="section-title">Aichaya, l'âme derrière la marque</h2>
+            <p class="section-desc">
+                Aichaya est une créatrice passionnée qui confectionne avec amour des bracelets artisanaux,
+                des robes féminines et des accessoires uniques. Son univers mêle tradition africaine
+                et modernité pour sublimer chaque femme qui porte ses créations.
+            </p>
+            <div class="about-features">
+                <div class="feature-item">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-txt">
+                        <strong>Qualité Garantie</strong>
+                        <span>Chaque produit est vérifié avant expédition</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🚚</div>
+                    <div class="feature-txt">
+                        <strong>Livraison Rapide</strong>
+                        <span>Partout en Afrique en 24–72h</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-txt">
+                        <strong>Suivi Personnalisé</strong>
+                        <span>Consultation stylistique offerte à chaque commande</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-txt">
+                        <strong>Échange Facile</strong>
+                        <span>Échange ou remboursement sous 7 jours</span>
+                    </div>
+                </div>
+            </div>
+            <a href="#contact" class="btn-primary">Prendre Contact →</a>
+        </div>
+    </section>
+
+    <!-- ===================== AVIS ===================== -->
+    <section id="avis">
+        <div class="avis-header">
+            <span class="section-tag">Témoignages</span>
+            <h2 class="section-title">Ce que disent nos clientes</h2>
+            <p class="section-desc">Des centaines de femmes nous font confiance. Voici leurs mots.</p>
+        </div>
+        <div class="avis-grid">
+            <div class="avis-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="avis-text">"J'ai commandé la robe longue et elle est PARFAITE ! La qualité est au rendez-vous
+                    et la livraison a été ultra-rapide. Je recommande vivement Élégance Boutique !"</p>
+                <div class="avis-user">
+                    <div class="avis-avatar">👩🏾</div>
+                    <div>
+                        <div class="avis-name">Fatou Diallo</div>
+                        <div class="avis-loc">📍 Dakar, Sénégal</div>
+                    </div>
+                </div>
+            </div>
+            <div class="avis-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="avis-text">"Le sac en cuir camel est magnifique, exactement comme sur les photos. Aminata a
+                    même ajouté un petit mot personnalisé dans le colis. Service 5 étoiles !"</p>
+                <div class="avis-user">
+                    <div class="avis-avatar">👩🏽</div>
+                    <div>
+                        <div class="avis-name">Mariam Koné</div>
+                        <div class="avis-loc">📍 Abidjan, Côte d'Ivoire</div>
+                    </div>
+                </div>
+            </div>
+            <div class="avis-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="avis-text">"Le kit maquillage est top qualité, et le parfum Nuit Dorée est envoûtant. Je
+                    commande chez Aminata depuis 2 ans et je n'ai jamais été déçue !"</p>
+                <div class="avis-user">
+                    <div class="avis-avatar">👩🏿</div>
+                    <div>
+                        <div class="avis-name">Aïcha Bah</div>
+                        <div class="avis-loc">📍 Conakry, Guinée</div>
+                    </div>
+                </div>
+            </div>
+            <div class="avis-card reveal">
+                <div class="stars">★★★★☆</div>
+                <p class="avis-text">"Très bonne boutique, les bijoux sont élégants et à prix raisonnable. La
+                    consultation stylistique m'a aidée à choisir les bons accessoires pour mon événement."</p>
+                <div class="avis-user">
+                    <div class="avis-avatar">👩🏾</div>
+                    <div>
+                        <div class="avis-name">Rokhaya Mbaye</div>
+                        <div class="avis-loc">📍 Lomé, Togo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section id="contact">
+        <div class="contact-info reveal">
+            <span class="section-tag">Nous Contacter</span>
+            <h2 class="section-title">Contactez Aichaya 💬</h2>
+            <p class="section-desc">
+                Pour passer une commande, personnaliser un bracelet, choisir une robe
+                ou simplement en savoir plus — écrivez-nous !
+            </p>
+            <div class="contact-items">
+                <div class="contact-item">
+                    <div class="ci-icon">📞</div>
+                    <div>
+                        <div class="ci-label">Téléphone / WhatsApp</div>
+                        <div class="ci-val">+221 77 123 45 67</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="ci-icon">📧</div>
+                    <div>
+                        <div class="ci-label">Email</div>
+                        <div class="ci-val">contact@elegance-boutique.com</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="ci-icon">📍</div>
+                    <div>
+                        <div class="ci-label">Localisation</div>
+                        <div class="ci-val">Dakar, Sénégal — Livraison internationale</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="ci-icon">🕐</div>
+                    <div>
+                        <div class="ci-label">Horaires</div>
+                        <div class="ci-val">Lun–Sam : 8h–20h | Dim : 9h–15h</div>
+                    </div>
+                </div>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-btn" title="Instagram">📸</a>
+                <a href="#" class="social-btn" title="Facebook">📘</a>
+                <a href="#" class="social-btn" title="WhatsApp">📱</a>
+                <a href="#" class="social-btn" title="TikTok">🎵</a>
+            </div>
+        </div>
+        <div class="contact-form reveal">
+            <form onsubmit="handleContact(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fname">Prénom</label>
+                        <input id="fname" type="text" placeholder="Votre prénom" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="lname">Nom</label>
+                        <input id="lname" type="text" placeholder="Votre nom" required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" placeholder="votre@email.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="sujet">Sujet</label>
+                    <select id="sujet">
+                        <option value="">— Choisir un sujet —</option>
+                        <option>Passer une commande</option>
+                        <option>Conseil stylisme</option>
+                        <option>Suivi de commande</option>
+                        <option>Retour / Échange</option>
+                        <option>Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="4" placeholder="Décrivez votre demande..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">
+                    Envoyer le message ✉️
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <span class="nav-logo" style="font-size:1.3rem;letter-spacing:1px;">L'UNIVERS D'AICHAYA</span>
+                <p class="footer-desc">
+                    Bracelets artisanaux, robes féminines et accessoires uniques —
+                    chaque pièce est créée avec amour par Aichaya pour sublimer la femme africaine moderne.
+                </p>
+            </div>
+            <div>
+                <div class="footer-heading">Navigation</div>
+                <ul class="footer-links">
+                    <li><a href="#hero">Accueil</a></li>
+                    <li><a href="#produits">Produits</a></li>
+                    <li><a href="#apropos">À Propos</a></li>
+                    <li><a href="#avis">Témoignages</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-heading">Catégories</div>
+                <ul class="footer-links">
+                    <li><a href="#produits" onclick="setFilter('bracelets')">Bracelets</a></li>
+                    <li><a href="#produits" onclick="setFilter('robes')">Robes</a></li>
+                    <li><a href="#produits" onclick="setFilter('accessoires')">Accessoires</a></li>
+                    <li><a href="#produits" onclick="setFilter('bijoux')">Bijoux</a></li>
+                    <li><a href="#produits" onclick="setFilter('autres')">Autres</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-heading">Infos Pratiques</div>
+                <ul class="footer-links">
+                    <li><a href="#">Politique de livraison</a></li>
+                    <li><a href="#">Retours & Échanges</a></li>
+                    <li><a href="#">Tailles & Guide</a></li>
+                    <li><a href="#">Paiement sécurisé</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">© 2026 <span>L'univers D'Aichaya</span> — Tous droits réservés · Créé avec ❤️ par
+                Aichaya</div>
+            <div class="footer-copy">💎 Artisanal · 🔒 Paiement sécurisé · 🌍 Livraison partout</div>
+        </div>
+    </footer>
+
+    <!-- ===================== CART DRAWER ===================== -->
+    <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3>💎 Mon Panier</h3>
+            <button class="cart-close" onclick="closeCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛍️</div>
+                <p>Votre panier est vide</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total</span>
+                <span id="cart-total">0 FCFA</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">
+                ✨ Commander Maintenant
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================== TOAST ===================== -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">💎</span>
+        <span id="toast-msg">Produit ajouté !</span>
+    </div>
+
+    <!-- ===================== BACK TO TOP ===================== -->
+    <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">▲</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
