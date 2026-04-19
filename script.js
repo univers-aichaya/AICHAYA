@@ -452,16 +452,35 @@ function handleContact(e) {
 }
 
 // ===========================
-// CHECKOUT BTN
+// CHECKOUT BTN — WhatsApp
 // ===========================
+const WHATSAPP_NUMBER = '221778332412'; // numéro sans le +
+
 function checkout() {
-  if (cart.length === 0) return;
-  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
-  showToast(`✅ Commande de ${fmt(total)} confirmée ! Merci 🎉`);
-  cart = [];
-  saveCart();
-  renderCartItems();
-  closeCart();
+  if (cart.length === 0) {
+    showToast('🛍️ Votre panier est vide !');
+    return;
+  }
+
+  // Construire le message détaillé
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+
+  let msg = '🛍️ *Nouvelle Commande — L\'univers D\'Aichaya*\n';
+  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
+
+  cart.forEach((item, i) => {
+    msg += `\n${i + 1}. ${item.emoji} *${item.name}*\n`;
+    msg += `   Quantité : ${item.qty}\n`;
+    msg += `   Prix unitaire : ${fmt(item.price)}\n`;
+    msg += `   Sous-total : ${fmt(item.price * item.qty)}\n`;
+  });
+
+  msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
+  msg += `💰 *TOTAL : ${fmt(total)}*\n\n`;
+  msg += '📦 Merci de confirmer votre commande et de nous indiquer votre adresse de livraison. 🙏';
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
 }
 
 // ===========================
