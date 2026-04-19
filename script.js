@@ -493,13 +493,10 @@ function payByWave() {
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const itemCount = cart.reduce((s, c) => s + c.qty, 0);
 
-  // 1) Ouvrir le lien Wave dans un nouvel onglet
-  window.open(WAVE_PAYMENT_URL, '_blank');
-
-  // 2) Construire le message WhatsApp avec mention paiement Wave
+  // --- Message WhatsApp avec mention paiement Wave ---
   let msg = '💳 *Commande Wave — L\'univers D\'Aichaya*\n';
   msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += `✅ *Mode de paiement : Wave* (lien envoyé au client)\n`;
+  msg += '✅ *Mode de paiement : Wave*\n';
   msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
 
   cart.forEach((item, i) => {
@@ -511,13 +508,16 @@ function payByWave() {
 
   msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
   msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
-  msg += '📦 Le client a choisi de payer par *Wave*. Merci de confirmer la réception du paiement et de nous indiquer votre adresse de livraison. 🙏';
+  msg += '📦 Le client a choisi de payer par *Wave*. Merci de confirmer la réception du paiement et de coordonner la livraison. 🙏';
 
-  // 3) Envoyer les détails de commande sur WhatsApp pour coordination
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-  setTimeout(() => window.open(waUrl, '_blank'), 800);
 
-  showToast('💳 Wave + 📱 WhatsApp ouverts pour coordination !');
+  // Ouvrir les deux ENSEMBLE dans le même geste utilisateur
+  // (sans setTimeout pour éviter le blocage des pop-ups)
+  window.open(WAVE_PAYMENT_URL, '_blank');
+  window.open(waUrl, '_blank');
+
+  showToast('💳 Wave + 📱 WhatsApp ouverts !');
 }
 
 function payByWhatsApp() {
