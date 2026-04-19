@@ -3,101 +3,109 @@
 // ===========================
 const PRODUCTS = [
   {
-    id: 1, name: "Bracelet Perles Dorées",
-    cat: "bracelets", catLabel: "Bracelets",
-    price: 6500, oldPrice: 9000,
-    emoji: "📿", badge: "promo",
-    desc: "Perles naturelles dorées, fermoir magnétique, fait main par Aichaya.",
-    colors: ["#d4a853", "#c9847a", "#f5f0eb"]
+    id: 13, name: "Déodorant Dove Spray",
+    cat: "cosmetiques", catLabel: "Cosmétiques",
+    price: 3500, oldPrice: 5000,
+    emoji: "🧴", image: "image/deo.jpg", badge: "promo",
+    desc: "Déodorant Dove Go Fresh antiperspirant, tenue 48h, fraîcheur continue.",
+    colors: ["#ffffff", "#c9847a", "#8bc34a"]
   },
   {
-    id: 2, name: "Robe Longue Fleurie",
+    id: 14, name: "Sac Plissé Élégant",
+    cat: "sacs", catLabel: "Sacs",
+    price: 15000, oldPrice: 20000,
+    emoji: "👜", image: "image/sac zara.jpg", badge: "new",
+    desc: "Sac en cuir PU plissé avec anse travaillée, disponible en Noir et Beige.",
+    colors: ["#000000", "#f5f5dc"]
+  },
+  {
+    id: 15, name: "Robe Florale Printanière",
     cat: "robes", catLabel: "Robes",
-    price: 24000, oldPrice: null,
-    emoji: "👗", badge: "new",
-    desc: "Tissu léger fleuri, col V, ceinture nouée, disponible en S-M-L-XL.",
-    colors: ["#c9847a", "#fde8e4", "#2d4a3e"]
+    price: 22000, oldPrice: null,
+    emoji: "👗", image: "image/Robe.jpg", badge: "hot",
+    desc: "Robe midi légère à motif floral, avec manches bouffantes et col carré.",
+    colors: ["#ffffff", "#ffb6c1", "#90ee90"]
   },
   {
-    id: 3, name: "Bracelet Manchette Wax",
+    id: 16, name: "Lot de Foulards Doux",
+    cat: "accessoires", catLabel: "Accessoires",
+    price: 5000, oldPrice: null,
+    emoji: "🧣", image: "image/bonet.jpg", badge: null,
+    desc: "Magnifiques foulards très doux et colorés, parfaits pour accessoiriser vos tenues avec style.",
+    colors: ["#ff0000", "#008000", "#0000ff"]
+  },
+  {
+    id: 17, name: "Déodorant Nivea Men Deep",
+    cat: "cosmetiques", catLabel: "Cosmétiques",
+    price: 3800, oldPrice: null,
+    emoji: "🧔", image: "image/Deo2.jpg", badge: "new",
+    desc: "Déodorant Nivea Men Deep, protection 48h avec extrait de charbon noir.",
+    colors: ["#000000", "#4a4a4a"]
+  },
+  {
+    id: 18, name: "Colle pour Accessoires",
+    cat: "autres", catLabel: "Autres",
+    price: 2500, oldPrice: null,
+    emoji: "🧴", image: "image/Colle.jpg", badge: null,
+    desc: "Colle forte et sécurisée pour faux cils, perruques ou accessoires corporels.",
+    colors: ["#ffffff"]
+  },
+  {
+    id: 19, name: "Lunettes de Soleil Chic",
+    cat: "accessoires", catLabel: "Accessoires",
+    price: 8000, oldPrice: 12000,
+    emoji: "🕶️", image: "image/Lunnete.jpg", badge: "promo",
+    desc: "Lunettes de soleil stylées avec protection UV, idéales pour finaliser votre tenue d'été.",
+    colors: ["#000000", "#d4a853"]
+  },
+  {
+    id: 20, name: "Parure de Bijoux Scintillante",
+    cat: "bijoux", catLabel: "Bijoux",
+    price: 15000, oldPrice: null,
+    emoji: "✨", image: "image/bijoux.jpg", badge: "new",
+    desc: "Ensemble complet de bijoux pour un look radieux et sophistiqué.",
+    colors: ["#d4a853", "#c9847a"]
+  },
+  {
+    id: 21, name: "Bracelet Ethnique",
     cat: "bracelets", catLabel: "Bracelets",
     price: 4500, oldPrice: null,
-    emoji: "✨", badge: "hot",
-    desc: "Résine artisanale avec motifs wax africains, touche ethnique unique.",
-    colors: ["#c9847a", "#d4a853", "#1a1a2e"]
+    emoji: "📿", image: "image/bracelet.jpg", badge: null,
+    desc: "Bracelet confectionné avec soin pour ajouter une touche originale à votre poignet.",
+    colors: ["#8b4513", "#c4a882"]
   },
   {
-    id: 4, name: "Foulard Soie & Or",
-    cat: "accessoires", catLabel: "Accessoires",
-    price: 8500, oldPrice: 12000,
-    emoji: "🧣", badge: "promo",
-    desc: "Soie naturelle imprimée, motifs géométriques dorés, 180×90cm.",
-    colors: ["#d4a853", "#c9847a", "#f5f0eb"]
-  },
-  {
-    id: 5, name: "Robe de Soirée Noire",
-    cat: "robes", catLabel: "Robes",
-    price: 38000, oldPrice: null,
-    emoji: "🖤", badge: "new",
-    desc: "Voile ajusté, dos nu élégant, fermeture invisible, couture haute gamme.",
-    colors: ["#1a1a2e", "#d4a853"]
-  },
-  {
-    id: 6, name: "Bracelet Perles Naturelles",
-    cat: "bracelets", catLabel: "Bracelets",
-    price: 5000, oldPrice: 7500,
-    emoji: "💎", badge: "promo",
-    desc: "Perles de bois naturelles teintées, lot de 3 bracelets assortis.",
-    colors: ["#c4a882", "#8b4513", "#1a1a2e"]
-  },
-  {
-    id: 7, name: "Sac Bandoulière Tissé",
-    cat: "accessoires", catLabel: "Accessoires",
-    price: 15000, oldPrice: null,
-    emoji: "👜", badge: null,
-    desc: "Raphia naturel tressé à la main, bandoulière ajustable, fermeture zip.",
-    colors: ["#c4a882", "#d4a853"]
-  },
-  {
-    id: 8, name: "Collier Pépite d'Or",
+    id: 22, name: "Collier Majestueux",
     cat: "bijoux", catLabel: "Bijoux",
-    price: 9500, oldPrice: null,
-    emoji: "🌟", badge: "new",
-    desc: "Chaîne fine plaqué or 18 carats, pendentif pépite artisanal.",
+    price: 9000, oldPrice: 13000,
+    emoji: "📿", image: "image/colier.jpg", badge: "promo",
+    desc: "Superbe collier qui sublime et met en valeur le port de tête.",
     colors: ["#d4a853"]
   },
   {
-    id: 9, name: "Robe Kimono Imprimée",
-    cat: "robes", catLabel: "Robes",
-    price: 19500, oldPrice: 25000,
-    emoji: "🌸", badge: "promo",
-    desc: "Style kimono croisé, imprimé tropical, ceinture tissu coordonnée.",
-    colors: ["#c9847a", "#fde8e4", "#2d4a3e"]
+    id: 23, name: "Gloss Lèvres Brillance Absolute",
+    cat: "cosmetiques", catLabel: "Cosmétiques",
+    price: 3000, oldPrice: null,
+    emoji: "💄", image: "image/gloss.jpg", badge: "hot",
+    desc: "Gloss pour des lèvres pulpeuses, hydratées et brillantes avec une tenue longue durée.",
+    colors: ["#ffb6c1", "#ff69b4"]
   },
   {
-    id: 10, name: "Chapeau de Paille Stylé",
-    cat: "accessoires", catLabel: "Accessoires",
-    price: 7000, oldPrice: null,
-    emoji: "👒", badge: null,
-    desc: "Paille naturelle, ruban coloré, bord large tendance estivale.",
-    colors: ["#c4a882", "#c9847a"]
+    id: 24, name: "Gloss Lèvres Brillance - Teinte Douce",
+    cat: "cosmetiques", catLabel: "Cosmétiques",
+    price: 3000, oldPrice: null,
+    emoji: "💄", image: "image/gloss (2).jpg", badge: null,
+    desc: "Variante du gloss à brillance absolue avec une teinte douce et discrète.",
+    colors: ["#ffc0cb", "#f08080"]
   },
   {
-    id: 11, name: "Huile Parfumée Aichaya",
-    cat: "autres", catLabel: "Autres",
-    price: 5500, oldPrice: null,
-    emoji: "🌿", badge: "hot",
-    desc: "Huile corporelle artisanale, senteur fleur d'oranger & coco, 100ml.",
-    colors: ["#d4a853", "#fdf6f0"]
-  },
-  {
-    id: 12, name: "Boucles d'Oreilles Fleurs",
-    cat: "bijoux", catLabel: "Bijoux",
-    price: 4000, oldPrice: 6000,
-    emoji: "🌺", badge: "promo",
-    desc: "Résine transparente fleurs séchées, crochet hypoallergénique.",
-    colors: ["#c9847a", "#fde8e4", "#d4a853"]
-  },
+    id: 25, name: "Jeu de Bracelets Dorés",
+    cat: "bracelets", catLabel: "Bracelets",
+    price: 8500, oldPrice: null,
+    emoji: "✨", image: "image/link here!_Pulseras florales apilables para mujer en oro - Juego de 3 pulseras chapadas en oro de 18K, pulseras de acero inoxidable sin decoloración,.jpg", badge: "new",
+    desc: "Jeu de 3 bracelets empilables plaqués or, motif floral élégant, ne se décolorent pas.",
+    colors: ["#d4a853"]
+  }
 ];
 
 const CATEGORIES = [
@@ -106,6 +114,8 @@ const CATEGORIES = [
   { id: "robes",       name: "Robes",        icon: "👗", count: PRODUCTS.filter(p=>p.cat==="robes").length },
   { id: "accessoires", name: "Accessoires",  icon: "🧣", count: PRODUCTS.filter(p=>p.cat==="accessoires").length },
   { id: "bijoux",      name: "Bijoux",       icon: "💎", count: PRODUCTS.filter(p=>p.cat==="bijoux").length },
+  { id: "sacs",        name: "Sacs",         icon: "👜", count: PRODUCTS.filter(p=>p.cat==="sacs").length },
+  { id: "cosmetiques", name: "Cosmétiques",  icon: "🧴", count: PRODUCTS.filter(p=>p.cat==="cosmetiques").length },
   { id: "autres",      name: "Autres",       icon: "🌿", count: PRODUCTS.filter(p=>p.cat==="autres").length },
 ];
 
@@ -235,7 +245,7 @@ function renderProducts(activeFilter) {
     return `
       <div class="product-card reveal" style="animation-delay:${i*0.07}s" data-id="${p.id}">
         <div class="product-img">
-          <div class="product-img-placeholder">${p.emoji}</div>
+          ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;background-color:#fff;">` : `<div class="product-img-placeholder">${p.emoji}</div>`}
           ${badgeHTML}
           <div class="product-actions">
             <button class="action-btn ${isLiked?'liked':''}" title="Favoris" onclick="toggleLike(event,${p.id})">
@@ -333,7 +343,9 @@ function renderCartItems() {
 
   wrap.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <div class="cart-item-img">${item.emoji}</div>
+      <div class="cart-item-img" style="background:#fff;">
+        ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;background-color:#fff;">` : item.emoji}
+      </div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${fmt(item.price)}</div>
@@ -399,8 +411,8 @@ function openQuickView(e, id) {
   ).join('');
   modal.innerHTML = `
     <div style="background:#fff;border-radius:20px;max-width:500px;width:100%;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.3);">
-      <div style="height:240px;background:linear-gradient(135deg,#fde8e4,#fdf3e7);display:flex;align-items:center;justify-content:center;font-size:6rem;position:relative;">
-        ${p.emoji}
+      <div style="height:240px;background:${p.image ? '#fff' : 'linear-gradient(135deg,#fde8e4,#fdf3e7)'};display:flex;align-items:center;justify-content:center;font-size:6rem;position:relative;overflow:hidden;">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:contain;background-color:#fff;">` : p.emoji}
         <button onclick="document.getElementById('quick-modal').remove()"
           style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.1);border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
       </div>
@@ -476,6 +488,22 @@ function openPayModal() {
       <span class="summary-total">${fmt(total)}</span>
     `;
   }
+
+  // Réinitialiser le sélecteur de région à chaque ouverture
+  const sel = document.getElementById('region-select');
+  if (sel) {
+    sel.value = '';
+    sel.classList.remove('selected');
+  }
+  const hint = document.getElementById('region-hint');
+  if (hint) {
+    hint.textContent = '⚠️ Veuillez sélectionner votre région pour continuer.';
+    hint.classList.remove('ok', 'hidden');
+  }
+  // Désactiver les boutons de paiement tant que la région n'est pas choisie
+  document.getElementById('btn-wave').classList.add('disabled');
+  document.getElementById('btn-whatsapp').classList.add('disabled');
+
   document.getElementById('pay-modal-overlay').classList.add('open');
   document.getElementById('pay-modal').classList.add('open');
   // Fermer le tiroir panier pour laisser la place au modal
@@ -487,16 +515,44 @@ function closePayModal() {
   document.getElementById('pay-modal').classList.remove('open');
 }
 
+// ===========================
+// REGION SELECTOR
+// ===========================
+function onRegionChange() {
+  const sel  = document.getElementById('region-select');
+  const hint = document.getElementById('region-hint');
+  const waveBtn = document.getElementById('btn-wave');
+  const waBtn   = document.getElementById('btn-whatsapp');
+
+  if (sel.value) {
+    sel.classList.add('selected');
+    hint.textContent = `✅ Région sélectionnée : ${sel.value}`;
+    hint.classList.add('ok');
+    hint.classList.remove('hidden');
+    waveBtn.classList.remove('disabled');
+    waBtn.classList.remove('disabled');
+  } else {
+    sel.classList.remove('selected');
+    hint.textContent = '⚠️ Veuillez sélectionner votre région pour continuer.';
+    hint.classList.remove('ok');
+    waveBtn.classList.add('disabled');
+    waBtn.classList.add('disabled');
+  }
+}
+
 function payByWave() {
+  const region = document.getElementById('region-select').value;
+  if (!region) { showToast('📍 Veuillez sélectionner votre région !'); return; }
   closePayModal();
 
-  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const total     = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const itemCount = cart.reduce((s, c) => s + c.qty, 0);
 
-  // --- Message WhatsApp avec mention paiement Wave ---
+  // --- Message WhatsApp avec mention paiement Wave + région ---
   let msg = '💳 *Commande Wave — L\'univers D\'Aichaya*\n';
   msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
   msg += '✅ *Mode de paiement : Wave*\n';
+  msg += `📍 *Région de livraison : ${region}*\n`;
   msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
 
   cart.forEach((item, i) => {
@@ -508,12 +564,11 @@ function payByWave() {
 
   msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
   msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
-  msg += '📦 Le client a choisi de payer par *Wave*. Merci de confirmer la réception du paiement et de coordonner la livraison. 🙏';
+  msg += `🚚 Livraison prévue en région *${region}* — paiement via *Wave*.\n`;
+  msg += '📦 Merci de confirmer la réception du paiement et de coordonner la livraison. 🙏';
 
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 
-  // Ouvrir les deux ENSEMBLE dans le même geste utilisateur
-  // (sans setTimeout pour éviter le blocage des pop-ups)
   window.open(WAVE_PAYMENT_URL, '_blank');
   window.open(waUrl, '_blank');
 
@@ -521,10 +576,16 @@ function payByWave() {
 }
 
 function payByWhatsApp() {
+  const region = document.getElementById('region-select').value;
+  if (!region) { showToast('📍 Veuillez sélectionner votre région !'); return; }
   closePayModal();
-  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+
+  const total     = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const itemCount = cart.reduce((s, c) => s + c.qty, 0);
 
   let msg = '🛍️ *Nouvelle Commande — L\'univers D\'Aichaya*\n';
+  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
+  msg += `📍 *Région de livraison : ${region}*\n`;
   msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
 
   cart.forEach((item, i) => {
@@ -535,8 +596,8 @@ function payByWhatsApp() {
   });
 
   msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += `💰 *TOTAL : ${fmt(total)}*\n\n`;
-  msg += '📦 Merci de confirmer votre commande et de nous indiquer votre adresse de livraison. 🙏';
+  msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
+  msg += `🚚 Livraison en région *${region}* — merci de confirmer et de coordonner l'adresse exacte. 🙏`;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
