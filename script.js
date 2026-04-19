@@ -452,17 +452,76 @@ function handleContact(e) {
 }
 
 // ===========================
-// CHECKOUT BTN — WhatsApp
+// CHECKOUT — Payment Modal
 // ===========================
 const WHATSAPP_NUMBER = '221778332412'; // numéro sans le +
+const WAVE_PAYMENT_URL = 'https://pay.wave.com/m/M_sn_H4Am4eXcmV5A/c/sn/';
 
 function checkout() {
   if (cart.length === 0) {
     showToast('🛍️ Votre panier est vide !');
     return;
   }
+  openPayModal();
+}
 
-  // Construire le message détaillé
+function openPayModal() {
+  // Calculer le total et remplir le résumé
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const itemCount = cart.reduce((s, c) => s + c.qty, 0);
+  const summary = document.getElementById('pay-modal-summary');
+  if (summary) {
+    summary.innerHTML = `
+      <span class="summary-label">🛍️ ${itemCount} article${itemCount > 1 ? 's' : ''} dans votre panier</span>
+      <span class="summary-total">${fmt(total)}</span>
+    `;
+  }
+  document.getElementById('pay-modal-overlay').classList.add('open');
+  document.getElementById('pay-modal').classList.add('open');
+  // Fermer le tiroir panier pour laisser la place au modal
+  closeCart();
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal-overlay').classList.remove('open');
+  document.getElementById('pay-modal').classList.remove('open');
+}
+
+function payByWave() {
+  closePayModal();
+
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const itemCount = cart.reduce((s, c) => s + c.qty, 0);
+
+  // 1) Ouvrir le lien Wave dans un nouvel onglet
+  window.open(WAVE_PAYMENT_URL, '_blank');
+
+  // 2) Construire le message WhatsApp avec mention paiement Wave
+  let msg = '💳 *Commande Wave — L\'univers D\'Aichaya*\n';
+  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
+  msg += `✅ *Mode de paiement : Wave* (lien envoyé au client)\n`;
+  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
+
+  cart.forEach((item, i) => {
+    msg += `\n${i + 1}. ${item.emoji} *${item.name}*\n`;
+    msg += `   Quantité : ${item.qty}\n`;
+    msg += `   Prix unitaire : ${fmt(item.price)}\n`;
+    msg += `   Sous-total : ${fmt(item.price * item.qty)}\n`;
+  });
+
+  msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
+  msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
+  msg += '📦 Le client a choisi de payer par *Wave*. Merci de confirmer la réception du paiement et de nous indiquer votre adresse de livraison. 🙏';
+
+  // 3) Envoyer les détails de commande sur WhatsApp pour coordination
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  setTimeout(() => window.open(waUrl, '_blank'), 800);
+
+  showToast('💳 Wave + 📱 WhatsApp ouverts pour coordination !');
+}
+
+function payByWhatsApp() {
+  closePayModal();
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
 
   let msg = '🛍️ *Nouvelle Commande — L\'univers D\'Aichaya*\n';

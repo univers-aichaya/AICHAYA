@@ -403,6 +403,42 @@
         </div>
     </div>
 
+    <!-- ===================== PAYMENT MODAL ===================== -->
+    <div class="pay-modal-overlay" id="pay-modal-overlay" onclick="closePayModal()"></div>
+    <div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-labelledby="pay-modal-title">
+        <button class="pay-modal-close" onclick="closePayModal()" title="Fermer">✕</button>
+        <div class="pay-modal-header">
+            <div class="pay-modal-icon">💳</div>
+            <h3 class="pay-modal-title" id="pay-modal-title">Choisissez votre mode de paiement</h3>
+            <p class="pay-modal-sub">Commande confirmée — sélectionnez comment vous souhaitez payer</p>
+        </div>
+        <div class="pay-modal-summary" id="pay-modal-summary"><!-- filled by JS --></div>
+        <div class="pay-modal-methods">
+            <!-- Wave -->
+            <button class="pay-method-card pay-wave" id="btn-wave" onclick="payByWave()">
+                <div class="pay-method-logo">
+                    <span class="wave-logo-text">Wave</span>
+                    <span class="wave-logo-sub">~</span>
+                </div>
+                <div class="pay-method-info">
+                    <div class="pay-method-name">Payer par Wave 💳</div>
+                    <div class="pay-method-desc">Paiement mobile + commande envoyée sur WhatsApp</div>
+                </div>
+                <div class="pay-method-arrow">→</div>
+            </button>
+            <!-- WhatsApp -->
+            <button class="pay-method-card pay-whatsapp" id="btn-whatsapp" onclick="payByWhatsApp()">
+                <div class="pay-method-logo pay-method-logo-wa">📱</div>
+                <div class="pay-method-info">
+                    <div class="pay-method-name">Commander via WhatsApp</div>
+                    <div class="pay-method-desc">Envoyez votre panier &amp; coordonnez la livraison</div>
+                </div>
+                <div class="pay-method-arrow">→</div>
+            </button>
+        </div>
+        <p class="pay-modal-secure">🔒 Paiement 100 % sécurisé · Livraison confirmée par Aichaya</p>
+    </div>
+
     <!-- ===================== TOAST ===================== -->
     <div class="toast" id="toast">
         <span class="toast-icon">💎</span>
