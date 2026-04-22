@@ -1,6 +1,9 @@
 // ===========================
 // DATA — PRODUITS • L'UNIVERS D'AICHAYA
 // ===========================
+// ===========================
+// DATA — PRODUITS • L'UNIVERS D'AICHAYA
+// ===========================
 const PRODUCTS = [
   {
     id: 13, name: "Déodorant Dove Spray",
@@ -15,7 +18,7 @@ const PRODUCTS = [
     cat: "sacs", catLabel: "Sacs",
     price: 15000, oldPrice: 20000,
     emoji: "👜", image: "image/sac zara.jpg", badge: "new",
-    desc: "Sac en cuir PU plissé avec anse travaillée, disponible en Noir et Beige.",
+    desc: "Sac en cuir PU plissé with anse travaillée, disponible en Noir et Beige.",
     colors: ["#000000", "#f5f5dc"]
   },
   {
@@ -39,7 +42,7 @@ const PRODUCTS = [
     cat: "cosmetiques", catLabel: "Cosmétiques",
     price: 3800, oldPrice: null,
     emoji: "🧔", image: "image/Deo2.jpg", badge: "new",
-    desc: "Déodorant Nivea Men Deep, protection 48h avec extrait de charbon noir.",
+    desc: "Déodorant Nivea Men Deep, protection 48h with extrait de charbon noir.",
     colors: ["#000000", "#4a4a4a"]
   },
   {
@@ -55,7 +58,7 @@ const PRODUCTS = [
     cat: "accessoires", catLabel: "Accessoires",
     price: 8000, oldPrice: 12000,
     emoji: "🕶️", image: "image/Lunnete.jpg", badge: "promo",
-    desc: "Lunettes de soleil stylées avec protection UV, idéales pour finaliser votre tenue d'été.",
+    desc: "Lunettes de soleil stylées with protection UV, idéales pour finaliser votre tenue d'été.",
     colors: ["#000000", "#d4a853"]
   },
   {
@@ -71,7 +74,7 @@ const PRODUCTS = [
     cat: "bracelets", catLabel: "Bracelets",
     price: 4500, oldPrice: null,
     emoji: "📿", image: "image/bracelet.jpg", badge: null,
-    desc: "Bracelet confectionné avec soin pour ajouter une touche originale à votre poignet.",
+    desc: "Bracelet confectionné with soin pour ajouter une touche originale à votre poignet.",
     colors: ["#8b4513", "#c4a882"]
   },
   {
@@ -87,7 +90,7 @@ const PRODUCTS = [
     cat: "cosmetiques", catLabel: "Cosmétiques",
     price: 3000, oldPrice: null,
     emoji: "💄", image: "image/gloss.jpg", badge: "hot",
-    desc: "Gloss pour des lèvres pulpeuses, hydratées et brillantes avec une tenue longue durée.",
+    desc: "Gloss pour des lèvres pulpeuses, hydratées et brillantes with une tenue longue durée.",
     colors: ["#ffb6c1", "#ff69b4"]
   },
   {
@@ -95,14 +98,14 @@ const PRODUCTS = [
     cat: "cosmetiques", catLabel: "Cosmétiques",
     price: 3000, oldPrice: null,
     emoji: "💄", image: "image/gloss (2).jpg", badge: null,
-    desc: "Variante du gloss à brillance absolue avec une teinte douce et discrète.",
+    desc: "Variante du gloss à brillance absolue with une teinte douce et discrète.",
     colors: ["#ffc0cb", "#f08080"]
   },
   {
     id: 25, name: "Jeu de Bracelets Dorés",
     cat: "bracelets", catLabel: "Bracelets",
     price: 8500, oldPrice: null,
-    emoji: "✨", image: "image/link here!_Pulseras florales apilables para mujer en oro - Juego de 3 pulseras chapadas en oro de 18K, pulseras de acero inoxidable sin decoloración,.jpg", badge: "new",
+    emoji: "✨", image: "image/link here!_Pulseras florales apilables para mujer en oro - Juego de 3 pulseras chapadas en oro de 18K, pulseras de acero inoxidable sans décoloration,.jpg", badge: "new",
     desc: "Jeu de 3 bracelets empilables plaqués or, motif floral élégant, ne se décolorent pas.",
     colors: ["#d4a853"]
   }
@@ -118,6 +121,9 @@ const CATEGORIES = [
   { id: "cosmetiques", name: "Cosmétiques",  icon: "🧴", count: PRODUCTS.filter(p=>p.cat==="cosmetiques").length },
   { id: "autres",      name: "Autres",       icon: "🌿", count: PRODUCTS.filter(p=>p.cat==="autres").length },
 ];
+
+let searchQuery = '';
+let sortMode    = 'default';
 
 // ===========================
 // STATE
@@ -214,6 +220,18 @@ function renderCategories() {
     </div>
   `).join('');
   observeReveal();
+
+  const catCards = grid.querySelectorAll('.cat-card');
+  if (catCards.length > 0 && typeof VanillaTilt !== 'undefined') {
+    VanillaTilt.init(catCards, {
+      max: 10,
+      speed: 300,
+      glare: true,
+      "max-glare": 0.2,
+      perspective: 800,
+      scale: 1.05
+    });
+  }
 }
 
 // ===========================
@@ -223,14 +241,30 @@ function renderProducts(activeFilter) {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
-  const list = activeFilter === 'tous'
+  // 1. Filtrage par catégorie
+  let list = activeFilter === 'tous'
     ? PRODUCTS
     : PRODUCTS.filter(p => p.cat === activeFilter);
+
+  // 2. Filtrage par recherche
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(p => 
+      p.name.toLowerCase().includes(q) || 
+      p.desc.toLowerCase().includes(q) ||
+      p.catLabel.toLowerCase().includes(q)
+    );
+  }
+
+  // 3. Tri
+  if (sortMode === 'price-asc')  list.sort((a,b) => a.price - b.price);
+  if (sortMode === 'price-desc') list.sort((a,b) => b.price - a.price);
+  if (sortMode === 'name-asc')  list.sort((a,b) => a.name.localeCompare(b.name));
 
   if (list.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-light);">
       <div style="font-size:3rem;margin-bottom:12px;">🔍</div>
-      <p>Aucun produit dans cette catégorie.</p>
+      <p>Aucun produit ne correspond à votre recherche.</p>
     </div>`;
     return;
   }
@@ -269,6 +303,32 @@ function renderProducts(activeFilter) {
       </div>`;
   }).join('');
   observeReveal();
+
+  const cards = grid.querySelectorAll('.product-card');
+  if (cards.length > 0 && typeof VanillaTilt !== 'undefined') {
+    VanillaTilt.init(cards, {
+      max: 20,
+      speed: 800,
+      glare: true,
+      "max-glare": 0.5,
+      perspective: 1200,
+      transition: true,
+      scale: 1.08
+    });
+  }
+}
+
+// ===========================
+// SEARCH & SORT HANDLERS
+// ===========================
+function handleSearch(e) {
+  searchQuery = e.target.value;
+  renderProducts(filter);
+}
+
+function handleSort(e) {
+  sortMode = e.target.value;
+  renderProducts(filter);
 }
 
 // ===========================
@@ -459,7 +519,7 @@ function showToast(msg) {
 // ===========================
 function handleContact(e) {
   e.preventDefault();
-  showToast('✅ Message envoyé ! On vous recontacte bientôt.');
+  showToast('✅ Message envoyé ! On recontacte bientôt.');
   e.target.reset();
 }
 
@@ -616,6 +676,125 @@ function observeReveal() {
 }
 
 // ===========================
+// HERO 3D SCENE (Three.js) - MAJESTIC EDITION
+// ===========================
+function initHero3D() {
+  const container = document.getElementById('hero-3d-container');
+  if (!container || typeof THREE === 'undefined') return;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.z = 6; // Un peu plus de recul pour la majesté
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, logarithmicDepthBuffer: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // 1. Luxueux bracelet majestueux (Nœud torique plus complexe)
+  const geometry = new THREE.TorusKnotGeometry(1.4, 0.3, 300, 150, 3, 5);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xd4a853, // Or pur
+    metalness: 1.0,
+    roughness: 0.15,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  group.add(mesh);
+
+  // 2. Halo magique / Fil d'or très fin autour
+  const wireGeometry = new THREE.TorusKnotGeometry(1.5, 0.08, 100, 30, 3, 5);
+  const wireMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.15
+  });
+  const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
+  group.add(wireMesh);
+
+  // 3. Poussière d'étoiles dorées (Particules)
+  const particlesGeo = new THREE.BufferGeometry();
+  const particlesCount = 500;
+  const posArray = new Float32Array(particlesCount * 3);
+  for(let i=0; i<particlesCount*3; i++) {
+    // Sphère de 8 unités de large
+    posArray[i] = (Math.random() - 0.5) * 9; 
+  }
+  particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+  const particlesMat = new THREE.PointsMaterial({
+    size: 0.035,
+    color: 0xd4a853,
+    transparent: true,
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending
+  });
+  const particles = new THREE.Points(particlesGeo, particlesMat);
+  scene.add(particles);
+
+  // Lumières Divines
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6)); // Un peu moins d'ambient pour accentuer le contraste
+
+  const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.5);
+  dirLight1.position.set(5, 5, 5);
+  scene.add(dirLight1);
+
+  const dirLight2 = new THREE.DirectionalLight(0xc9847a, 3.0); // Rose gold très fort
+  dirLight2.position.set(-5, -5, 5);
+  scene.add(dirLight2);
+  
+  const bottomLight = new THREE.DirectionalLight(0xffffff, 1.0); // Lumière d'en dessous
+  bottomLight.position.set(0, -5, 0);
+  scene.add(bottomLight);
+
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+  const windowHalfX = window.innerWidth / 2;
+  const windowHalfY = window.innerHeight / 2;
+
+  document.addEventListener('mousemove', (event) => {
+    mouseX = (event.clientX - windowHalfX) * 0.001;
+    mouseY = (event.clientY - windowHalfY) * 0.001;
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    
+    // Smooth interaction (parallaxe majestueuse, plus lente)
+    targetX = mouseX * 0.5;
+    targetY = mouseY * 0.5;
+    
+    // Rotation automatique LENTE ET MAJESTUEUSE
+    mesh.rotation.y += 0.0015;
+    mesh.rotation.x += 0.0005;
+
+    wireMesh.rotation.y -= 0.001; // Contre-rotation magique
+    wireMesh.rotation.x += 0.0015;
+    
+    particles.rotation.y -= 0.0005; // Tourbillon d'étoiles
+    
+    // Parallaxe à la souris
+    group.rotation.y += 0.02 * (targetX - group.rotation.y);
+    group.rotation.x += 0.02 * (targetY - group.rotation.x);
+    
+    particles.rotation.y += 0.005 * (targetX - particles.rotation.y);
+    particles.rotation.x += 0.005 * (targetY - particles.rotation.x);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    if (!container) return;
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+}
+
+// ===========================
 // INIT
 // ===========================
 document.addEventListener('DOMContentLoaded', () => {
@@ -625,6 +804,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartUI();
   runCountdown();
   observeReveal();
+  initHero3D();
 
   // Mobile nav styles (inject dynamically)
   const style = document.createElement('style');

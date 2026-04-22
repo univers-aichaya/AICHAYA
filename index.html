@@ -87,9 +87,9 @@
                 </div>
             </div>
         </div>
-        <!-- Hero visual -->
-        <div class="hero-image">
-            <div class="hero-image-placeholder"><img src="image/ai.jpeg" alt=""></div>
+        <!-- Hero visual 3D -->
+        <div class="hero-image-3d" id="hero-3d-container">
+            <!-- Le canvas Three.js sera inséré ici par script.js -->
         </div>
     </section>
 
@@ -105,6 +105,20 @@
                 <span class="section-tag">Notre Sélection</span>
                 <h2 class="section-title">Produits Phares</h2>
                 <p class="section-desc">Des pièces choisies avec amour, qualité garantie et livraison rapide.</p>
+            </div>
+            <div class="products-controls">
+                <div class="search-wrap">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="product-search" placeholder="Rechercher un produit..." oninput="handleSearch(event)">
+                </div>
+                <div class="sort-wrap">
+                    <select id="product-sort" onchange="handleSort(event)">
+                        <option value="default">✨ Recommandés</option>
+                        <option value="price-asc">💰 Prix : Croissant</option>
+                        <option value="price-desc">💎 Prix : Décroissant</option>
+                        <option value="name-asc">🔤 Nom : A-Z</option>
+                    </select>
+                </div>
             </div>
             <div class="filter-tabs" id="filter-tabs"></div>
         </div>
@@ -138,7 +152,7 @@
     <!-- ===================== ABOUT ===================== -->
     <section id="apropos">
         <div class="about-image reveal">
-            <div class="about-img-wrap">🧕🏾</div>
+            <div class="about-img-wrap"><img src="image/ai.jpeg" alt=""></div>
             <div class="about-badge-float">
                 <div class="badge-icon">💎</div>
                 <div class="badge-val">100%</div>
@@ -165,7 +179,7 @@
                     <div class="feature-icon">🚚</div>
                     <div class="feature-txt">
                         <strong>Livraison Rapide</strong>
-                        <span>Partout en Afrique en 24–72h</span>
+                        <span>Partout au Senegal en 24–24h</span>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -477,6 +491,8 @@
     <!-- ===================== BACK TO TOP ===================== -->
     <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">▲</button>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <script src="script.js"></script>
 </body>
 

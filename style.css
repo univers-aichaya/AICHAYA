@@ -291,47 +291,22 @@ body {
 .stat-num span { color: var(--gold); }
 .stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; }
 
-.hero-image {
-  position: absolute; right: 5%; bottom: 0;
-  width: 42%;
-  max-width: 540px;
+.hero-image-3d {
+  position: absolute; right: 2%; top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  max-width: 600px;
+  height: 80vh;
   z-index: 1;
-  border-radius: var(--radius) var(--radius) 0 0;
-  overflow: hidden;
-  box-shadow: -20px 0 60px rgba(0,0,0,0.4);
-}
-.hero-image-placeholder {
-  width: 100%; height: 560px;
-  position: relative;
-  border-radius: var(--radius) var(--radius) 0 0;
-  overflow: hidden;
-  border: 1px solid rgba(201,132,122,0.25);
-  background: linear-gradient(160deg, rgba(201,132,122,0.15), rgba(212,168,83,0.08));
   display: flex; align-items: center; justify-content: center;
-  font-size: 5rem;
+  pointer-events: none; /* Laisse passer les clics vers le fond si besoin */
 }
-.hero-image-placeholder img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-  border-radius: 0;
-  transition: transform 0.6s ease;
-}
-.hero-image-placeholder::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 55%,
-    rgba(26,26,46,0.6) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-.hero-image:hover .hero-image-placeholder img {
-  transform: scale(1.04);
+.hero-image-3d canvas {
+  width: 100% !important;
+  height: 100% !important;
+  outline: none;
+  pointer-events: auto; /* Permet d'interagir avec l'objet 3D */
+  filter: drop-shadow(0 20px 50px rgba(212,168,83,0.3));
 }
 
 /* ===========================
@@ -411,6 +386,61 @@ section { padding: 90px 5%; }
   flex-wrap: wrap; gap: 24px;
 }
 
+.products-controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+.search-wrap i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--rose);
+  font-size: 0.9rem;
+}
+.search-wrap input {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(201,132,122,0.15);
+  background: var(--white);
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition);
+  box-shadow: var(--shadow-dark);
+}
+.search-wrap input:focus {
+  border-color: var(--rose);
+  box-shadow: 0 0 0 4px rgba(201,132,122,0.1);
+}
+
+.sort-wrap select {
+  padding: 12px 20px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(201,132,122,0.15);
+  background: var(--white);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition);
+  font-family: inherit;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-dark);
+}
+.sort-wrap select:focus {
+  border-color: var(--rose);
+}
+
 .filter-tabs {
   display: flex; gap: 10px; flex-wrap: wrap;
 }
@@ -443,22 +473,24 @@ section { padding: 90px 5%; }
 .product-card {
   background: var(--white);
   border-radius: var(--radius);
-  overflow: hidden;
+  /* overflow: hidden removed for 3d preserve */
   box-shadow: var(--shadow-dark);
-  transition: var(--transition);
+  transition: box-shadow 0.35s ease;
   position: relative;
   cursor: pointer;
+  transform-style: preserve-3d;
 }
 .product-card:hover {
-  transform: translateY(-8px);
   box-shadow: 0 20px 50px rgba(201,132,122,0.2);
 }
 
 .product-img {
   position: relative;
   height: 260px;
-  overflow: hidden;
   background: var(--grey);
+  border-radius: var(--radius) var(--radius) 0 0;
+  overflow: hidden;
+  transform: translateZ(50px); /* majestueux: plus de relief */
 }
 .product-img img,
 .product-img-placeholder {
@@ -510,7 +542,12 @@ section { padding: 90px 5%; }
 .action-btn:hover { background: var(--rose); color: var(--white); }
 .action-btn.liked { color: var(--rose); }
 
-.product-info { padding: 20px; }
+.product-info { 
+  padding: 20px; 
+  transform: translateZ(60px); /* majestueux: ressort beaucoup plus */
+  background: var(--white);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
 .product-cat {
   font-size: 0.7rem;
   letter-spacing: 2px;
