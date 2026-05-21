@@ -87,9 +87,16 @@
                 </div>
             </div>
         </div>
-        <!-- Hero visual 3D -->
-        <div class="hero-image-3d" id="hero-3d-container">
-            <!-- Le canvas Three.js sera inséré ici par script.js -->
+        <!-- Hero Visual Showcase -->
+        <div class="hero-visual-showcase" id="hero-showcase">
+            <div class="luxury-frame">
+                <div class="frame-glow"></div>
+                <img src="image/bijoux.jpg" alt="Bijoux de Luxe Aichaya" class="luxury-img" />
+                <div class="floating-badge">
+                    <span class="badge-icon">✨</span>
+                    <span class="badge-text">Collection 2026</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -417,69 +424,309 @@
         </div>
     </div>
 
-    <!-- ===================== PAYMENT MODAL ===================== -->
-    <div class="pay-modal-overlay" id="pay-modal-overlay" onclick="closePayModal()"></div>
+    <!-- ===================== PAYMENT PORTAL WIZARD ===================== -->
+    <div class="pay-modal-overlay" id="pay-modal-overlay"></div>
     <div class="pay-modal" id="pay-modal" role="dialog" aria-modal="true" aria-labelledby="pay-modal-title">
         <button class="pay-modal-close" onclick="closePayModal()" title="Fermer">✕</button>
+        
+        <!-- HEADER -->
         <div class="pay-modal-header">
-            <div class="pay-modal-icon">💳</div>
-            <h3 class="pay-modal-title" id="pay-modal-title">Choisissez votre mode de paiement</h3>
-            <p class="pay-modal-sub">Commande confirmée — sélectionnez comment vous souhaitez payer</p>
-        </div>
-        <div class="pay-modal-summary" id="pay-modal-summary"><!-- filled by JS --></div>
-
-        <!-- ===== LOCALISATION — Région du Sénégal ===== -->
-        <div class="pay-region-wrap">
-            <label class="pay-region-label" for="region-select">
-                📍 Votre région de livraison
-            </label>
-            <div class="pay-region-select-wrap">
-                <select id="region-select" class="pay-region-select" onchange="onRegionChange()">
-                    <option value="">— Sélectionnez votre région —</option>
-                    <option value="Dakar">🏙️ Dakar</option>
-                    <option value="Thiès">🌿 Thiès</option>
-                    <option value="Diourbel">🌾 Diourbel</option>
-                    <option value="Fatick">🌊 Fatick</option>
-                    <option value="Kaolack">🌴 Kaolack</option>
-                    <option value="Kaffrine">🌻 Kaffrine</option>
-                    <option value="Louga">🏜️ Louga</option>
-                    <option value="Saint-Louis">🕌 Saint-Louis</option>
-                    <option value="Matam">🌄 Matam</option>
-                    <option value="Tambacounda">🦁 Tambacounda</option>
-                    <option value="Kédougou">⛰️ Kédougou</option>
-                    <option value="Kolda">🌳 Kolda</option>
-                    <option value="Sédhiou">🌿 Sédhiou</option>
-                    <option value="Ziguinchor">🌺 Ziguinchor</option>
-                </select>
-                <span class="pay-region-arrow">▾</span>
+            <div class="pay-modal-progress-bar">
+                <div class="progress-step active" id="p-step-1" data-label="Livraison">1</div>
+                <div class="progress-line" id="p-line-1"></div>
+                <div class="progress-step" id="p-step-2" data-label="Paiement">2</div>
+                <div class="progress-line" id="p-line-2"></div>
+                <div class="progress-step" id="p-step-3" data-label="Succès">3</div>
             </div>
-            <p class="pay-region-hint" id="region-hint">⚠️ Veuillez sélectionner votre région pour continuer.</p>
+            <h3 class="pay-modal-title" id="pay-modal-title">Finaliser votre commande</h3>
+            <p class="pay-modal-sub" id="pay-modal-sub">Veuillez renseigner vos informations de livraison.</p>
         </div>
 
-        <div class="pay-modal-methods">
-            <!-- Wave -->
-            <button class="pay-method-card pay-wave" id="btn-wave" onclick="payByWave()">
-                <div class="pay-method-logo">
-                    <span class="wave-logo-text">Wave</span>
-                    <span class="wave-logo-sub">~</span>
+        <div class="pay-modal-summary" id="pay-modal-summary"><!-- Filled by JS --></div>
+
+        <!-- ================= STEP 1: SHIPPING & CONTACT ================= -->
+        <div class="pay-step active" id="pay-step-1">
+            <div class="pay-form-group">
+                <label for="shipping-name">👤 Nom complet *</label>
+                <input type="text" id="shipping-name" placeholder="Ex: Fatou Diallo" required />
+            </div>
+            <div class="pay-form-group">
+                <label for="shipping-phone">📞 Numéro de téléphone *</label>
+                <div class="phone-input-wrapper">
+                    <span class="phone-prefix">🇸🇳 +221</span>
+                    <input type="tel" id="shipping-phone" placeholder="77 833 24 12" maxlength="12" required />
                 </div>
-                <div class="pay-method-info">
-                    <div class="pay-method-name">Payer par Wave 💳</div>
-                    <div class="pay-method-desc">Paiement mobile + commande envoyée sur WhatsApp</div>
+            </div>
+            <div class="pay-form-group">
+                <label for="shipping-address">📍 Adresse exacte *</label>
+                <input type="text" id="shipping-address" placeholder="Ex: Quartier Escale, Villa N°14" required />
+            </div>
+            <div class="pay-form-group">
+                <label for="region-select">🏙️ Région du Sénégal *</label>
+                <div class="pay-region-select-wrap">
+                    <select id="region-select" class="pay-region-select" onchange="onRegionChange()">
+                        <option value="">— Sélectionnez votre région —</option>
+                        <option value="Dakar">🏙️ Dakar</option>
+                        <option value="Thiès">🌿 Thiès</option>
+                        <option value="Diourbel">🌾 Diourbel</option>
+                        <option value="Fatick">🌊 Fatick</option>
+                        <option value="Kaolack">🌴 Kaolack</option>
+                        <option value="Kaffrine">🌻 Kaffrine</option>
+                        <option value="Louga">🏜️ Louga</option>
+                        <option value="Saint-Louis">🕌 Saint-Louis</option>
+                        <option value="Matam">🌄 Matam</option>
+                        <option value="Tambacounda">🦁 Tambacounda</option>
+                        <option value="Kédougou">⛰️ Kédougou</option>
+                        <option value="Kolda">🌳 Kolda</option>
+                        <option value="Sédhiou">🌿 Sédhiou</option>
+                        <option value="Ziguinchor">🌺 Ziguinchor</option>
+                    </select>
+                    <span class="pay-region-arrow">▾</span>
                 </div>
-                <div class="pay-method-arrow">→</div>
-            </button>
-            <!-- WhatsApp -->
-            <button class="pay-method-card pay-whatsapp" id="btn-whatsapp" onclick="payByWhatsApp()">
-                <div class="pay-method-logo pay-method-logo-wa">📱</div>
-                <div class="pay-method-info">
-                    <div class="pay-method-name">Commander via WhatsApp</div>
-                    <div class="pay-method-desc">Envoyez votre panier &amp; coordonnez la livraison</div>
-                </div>
-                <div class="pay-method-arrow">→</div>
+            </div>
+            
+            <button class="pay-wizard-btn next-btn" onclick="goToStep(2)">
+                Continuer vers le paiement →
             </button>
         </div>
-        <p class="pay-modal-secure">🔒 Paiement 100 % sécurisé · Livraison confirmée par Aichaya</p>
+
+        <!-- ================= STEP 2: PAYMENT METHOD & FORM ================= -->
+        <div class="pay-step" id="pay-step-2">
+            <!-- Back to shipping -->
+            <button class="pay-back-btn" onclick="goToStep(1)">← Modifier la livraison</button>
+            
+            <!-- Payment tab selector -->
+            <div class="payment-tabs">
+                <button class="pay-tab active" data-pay="wave" onclick="switchPayTab('wave')">
+                    <span class="tab-icon">💳</span>
+                    <span class="tab-name">Wave</span>
+                </button>
+                <button class="pay-tab" data-pay="mobile" onclick="switchPayTab('mobile')">
+                    <span class="tab-icon">📱</span>
+                    <span class="tab-name">Orange/Free</span>
+                </button>
+                <button class="pay-tab" data-pay="card" onclick="switchPayTab('card')">
+                    <span class="tab-icon">✨</span>
+                    <span class="tab-name">Carte</span>
+                </button>
+            </div>
+
+            <!-- TAB CONTENT: WAVE -->
+            <div class="pay-tab-content active" id="tab-content-wave">
+                <div class="wave-payment-box">
+                    <div class="wave-qr-container">
+                        <!-- QR Code generated dynamically by JS -->
+                        <div id="wave-qr-code" class="qr-placeholder">
+                            <i class="fa fa-qrcode"></i>
+                        </div>
+                    </div>
+                    <div class="wave-instructions">
+                        <h4>Payer instantanément avec Wave Senegal</h4>
+                        <p>Scannez le QR code ci-dessus avec l'application Wave ou cliquez sur le bouton ci-dessous pour ouvrir le lien de paiement direct.</p>
+                    </div>
+                </div>
+                <button class="pay-wizard-btn wave-btn" onclick="processWavePayment()">
+                    💸 Ouvrir l'application & Payer
+                </button>
+                <button class="pay-wizard-btn wave-verify-btn" onclick="verifyWavePayment()" style="background:#e6faf7; color:#008f7d; border:1px dashed #00af9b; margin-top:10px; box-shadow:none;">
+                    🔍 Vérifier le statut du paiement
+                </button>
+            </div>
+
+            <!-- TAB CONTENT: ORANGE / FREE MONEY -->
+            <div class="pay-tab-content" id="tab-content-mobile">
+                <div class="mobile-money-form">
+                    <div class="pay-form-group">
+                        <label>Choisissez votre opérateur :</label>
+                        <div class="operator-selector">
+                            <label class="operator-option OM active">
+                                <input type="radio" name="mobile-operator" value="orange" checked onchange="updateOperatorUI('orange')" />
+                                🍊 Orange Money
+                            </label>
+                            <label class="operator-option FM">
+                                <input type="radio" name="mobile-operator" value="free" onchange="updateOperatorUI('free')" />
+                                🟢 Free Money
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-phone-step" id="mobile-phone-step-container">
+                        <div class="pay-form-group">
+                            <label for="mobile-pay-phone">📱 Numéro de paiement mobile</label>
+                            <div class="phone-input-wrapper">
+                                <span class="phone-prefix" id="operator-prefix">🇸🇳 +221</span>
+                                <input type="tel" id="mobile-pay-phone" placeholder="77 XXXXXXX" maxlength="9" />
+                            </div>
+                        </div>
+                        <button class="pay-wizard-btn" onclick="sendMobileOTP()">
+                            🔒 Obtenir le code de validation OTP
+                        </button>
+                    </div>
+
+                    <div class="mobile-otp-step hidden" id="mobile-otp-step-container">
+                        <div class="otp-instruction-box">
+                            <p id="otp-instructions">🍊 Composez le <strong>#144#</strong> puis choisissez l'option 1 pour valider, ou saisissez le code OTP reçu ci-dessous.</p>
+                            <div class="otp-timer">Le code expire dans <span id="otp-countdown">02:00</span></div>
+                        </div>
+                        <div class="pay-form-group">
+                            <label for="mobile-otp-code">🔑 Code OTP (4 chiffres) *</label>
+                            <input type="text" id="mobile-otp-code" class="otp-code-input" placeholder="0000" maxlength="4" />
+                        </div>
+                        <div class="otp-actions-wrap">
+                            <button class="otp-resend-btn" onclick="sendMobileOTP()">Renvoyer le code</button>
+                            <button class="pay-wizard-btn submit-otp-btn" onclick="validateMobileOTP()">
+                                ✅ Confirmer &amp; Payer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT: CREDIT CARD -->
+            <div class="pay-tab-content" id="tab-content-card">
+                <!-- 3D INTERACTIVE CREDIT CARD CONTAINER -->
+                <div class="pay-card-container">
+                    <div class="pay-card-inner" id="credit-card-3d">
+                        <!-- FRONT -->
+                        <div class="pay-card-front">
+                            <div class="card-glow"></div>
+                            <div class="card-header-row">
+                                <div class="card-chip"></div>
+                                <div class="card-type-logo" id="card-type-logo">💳</div>
+                            </div>
+                            <div class="card-number-display" id="card-num-display">•••• •••• •••• ••••</div>
+                            <div class="card-footer-row">
+                                <div class="card-holder-col">
+                                    <span class="card-label">Titulaire</span>
+                                    <span class="card-value-display" id="card-holder-display">NOM COMPLET</span>
+                                </div>
+                                <div class="card-expiry-col">
+                                    <span class="card-label">Expire</span>
+                                    <span class="card-value-display" id="card-expiry-display">MM/AA</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BACK -->
+                        <div class="pay-card-back">
+                            <div class="card-magnetic-strip"></div>
+                            <div class="card-ccv-area">
+                                <span class="card-label" style="text-align:right;margin-bottom:4px;display:block;color:#fff;">CVV</span>
+                                <div class="card-signature-strip"></div>
+                                <div class="card-cvv-display" id="card-cvv-display">•••</div>
+                            </div>
+                            <div class="card-back-text">L'univers D'Aichaya — Ornementation de Luxe</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD FORM FIELDS -->
+                <div class="card-form-fields">
+                    <div class="pay-form-group">
+                        <label for="card-number">💳 Numéro de carte *</label>
+                        <input type="text" id="card-number" placeholder="4000 1234 5678 9010" maxlength="19" oninput="formatCardNumber(this)" required />
+                    </div>
+                    <div class="pay-form-group">
+                        <label for="card-holder">👤 Nom du titulaire *</label>
+                        <input type="text" id="card-holder" placeholder="FATOU DIALLO" oninput="updateCardHolder(this.value)" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="pay-form-group">
+                            <label for="card-expiry">📅 Date d'expiration *</label>
+                            <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" oninput="formatCardExpiry(this)" required />
+                        </div>
+                        <div class="pay-form-group">
+                            <label for="card-cvv">🔒 Code CVV (3 chiffres) *</label>
+                            <input type="text" id="card-cvv" placeholder="123" maxlength="3" onfocus="flipCard(true)" onblur="flipCard(false)" oninput="updateCardCVV(this.value)" required />
+                        </div>
+                    </div>
+                    <button class="pay-wizard-btn card-pay-submit" onclick="processCardPayment()">
+                        🔒 Payer en toute sécurité (SSL)
+                    </button>
+                </div>
+            </div>
+
+            <p class="pay-modal-secure">🔒 Cryptage SSL 256 bits · Certifié conforme PCI-DSS</p>
+        </div>
+
+        <!-- ================= STEP 3: LOADER / PROCESSING ================= -->
+        <div class="pay-step" id="pay-step-3">
+            <div class="pay-loader-content">
+                <div class="secure-loader">
+                    <div class="loader-circle"></div>
+                    <div class="loader-shield">🔒</div>
+                </div>
+                <h4 id="loader-title">Sécurisation de la connexion...</h4>
+                <p id="loader-subtitle" class="loader-sub">Veuillez ne pas fermer cette fenêtre.</p>
+                <div class="secure-badges">
+                    <span>🛡️ 3D Secure</span>
+                    <span>🔒 SSL Encrypted</span>
+                    <span>💳 PCI Compliant</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STEP 4: SUCCESS & RECEIPT ================= -->
+        <div class="pay-step" id="pay-step-4">
+            <div class="pay-success-content">
+                <div class="success-checkmark-wrap">
+                    <svg class="checkmark-svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h4 class="success-title">Commande Validée ! ✨</h4>
+                <p class="success-desc">Votre paiement a été traité avec succès et votre commande est enregistrée.</p>
+                
+                <div class="receipt-invoice-card" id="receipt-invoice-card">
+                    <div class="invoice-header">
+                        <span class="invoice-brand">L'UNIVERS D'AICHAYA</span>
+                        <span class="invoice-ref-badge" id="success-order-ref">#ACH-XXXX</span>
+                    </div>
+                    <div class="invoice-divider"></div>
+                    <div class="invoice-row">
+                        <span class="inv-label">Date :</span>
+                        <span class="inv-value" id="success-order-date">21/05/2026</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="inv-label">Client :</span>
+                        <span class="inv-value" id="success-order-client">Fatou Diallo</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="inv-label">Téléphone :</span>
+                        <span class="inv-value" id="success-order-phone">+221 77 833 24 12</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="inv-label">Région :</span>
+                        <span class="inv-value" id="success-order-region">Dakar</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="inv-label">Mode :</span>
+                        <span class="inv-value" id="success-order-method">Wave</span>
+                    </div>
+                    <div class="invoice-divider"></div>
+                    <div class="invoice-items-list" id="invoice-items-list">
+                        <!-- Filled by JS -->
+                    </div>
+                    <div class="invoice-divider"></div>
+                    <div class="invoice-row invoice-total-row">
+                        <span class="inv-total-label">Montant Payé</span>
+                        <span class="inv-total-val" id="success-order-total">15 000 FCFA</span>
+                    </div>
+                </div>
+
+                <div class="success-actions">
+                    <button class="pay-wizard-btn receipt-btn" onclick="downloadReceipt()">
+                        🖨️ Télécharger le Reçu PDF
+                    </button>
+                    <button class="pay-wizard-btn wa-sync-btn" onclick="syncWithWhatsApp()">
+                        📲 Envoyer sur WhatsApp
+                    </button>
+                    <button class="pay-wizard-btn return-shop-btn" onclick="closePayModal(); resetCart();">
+                        🛒 Retourner à la Boutique
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ===================== TOAST ===================== -->
@@ -491,8 +738,6 @@
     <!-- ===================== BACK TO TOP ===================== -->
     <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">▲</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <script src="script.js"></script>
 </body>
 

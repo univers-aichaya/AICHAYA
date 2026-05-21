@@ -220,18 +220,6 @@ function renderCategories() {
     </div>
   `).join('');
   observeReveal();
-
-  const catCards = grid.querySelectorAll('.cat-card');
-  if (catCards.length > 0 && typeof VanillaTilt !== 'undefined') {
-    VanillaTilt.init(catCards, {
-      max: 10,
-      speed: 300,
-      glare: true,
-      "max-glare": 0.2,
-      perspective: 800,
-      scale: 1.05
-    });
-  }
 }
 
 // ===========================
@@ -303,19 +291,6 @@ function renderProducts(activeFilter) {
       </div>`;
   }).join('');
   observeReveal();
-
-  const cards = grid.querySelectorAll('.product-card');
-  if (cards.length > 0 && typeof VanillaTilt !== 'undefined') {
-    VanillaTilt.init(cards, {
-      max: 20,
-      speed: 800,
-      glare: true,
-      "max-glare": 0.5,
-      perspective: 1200,
-      transition: true,
-      scale: 1.08
-    });
-  }
 }
 
 // ===========================
@@ -524,10 +499,19 @@ function handleContact(e) {
 }
 
 // ===========================
-// CHECKOUT — Payment Modal
+// CHECKOUT — PAYMENT PORTAL CONTROLLER (WIZARD)
 // ===========================
-const WHATSAPP_NUMBER = '221778332412'; // numéro sans le +
+const WHATSAPP_NUMBER = '221778332412'; // boutique owner WhatsApp
 const WAVE_PAYMENT_URL = 'https://pay.wave.com/m/M_sn_H4Am4eXcmV5A/c/sn/';
+
+let currentPayStep = 1;
+let currentPayMethod = 'wave';
+let activeOperator = 'orange';
+let otpTimerInterval = null;
+let lastCreatedOrder = null;
+
+let hasInitiatedWave = false;
+let generatedOTPCode = null;
 
 function checkout() {
   if (cart.length === 0) {
@@ -538,129 +522,461 @@ function checkout() {
 }
 
 function openPayModal() {
-  // Calculer le total et remplir le résumé
+  // Calculer total & quantité
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const itemCount = cart.reduce((s, c) => s + c.qty, 0);
+  
   const summary = document.getElementById('pay-modal-summary');
   if (summary) {
     summary.innerHTML = `
-      <span class="summary-label">🛍️ ${itemCount} article${itemCount > 1 ? 's' : ''} dans votre panier</span>
+      <span class="summary-label">🛍️ Récapitulatif : ${itemCount} article${itemCount > 1 ? 's' : ''}</span>
       <span class="summary-total">${fmt(total)}</span>
     `;
   }
 
-  // Réinitialiser le sélecteur de région à chaque ouverture
-  const sel = document.getElementById('region-select');
-  if (sel) {
-    sel.value = '';
-    sel.classList.remove('selected');
-  }
-  const hint = document.getElementById('region-hint');
-  if (hint) {
-    hint.textContent = '⚠️ Veuillez sélectionner votre région pour continuer.';
-    hint.classList.remove('ok', 'hidden');
-  }
-  // Désactiver les boutons de paiement tant que la région n'est pas choisie
-  document.getElementById('btn-wave').classList.add('disabled');
-  document.getElementById('btn-whatsapp').classList.add('disabled');
+  // Réinitialiser les champs livraison
+  document.getElementById('shipping-name').value = '';
+  document.getElementById('shipping-phone').value = '';
+  document.getElementById('shipping-address').value = '';
+  document.getElementById('region-select').value = '';
 
+  // Réinitialiser les statuts de vérification
+  hasInitiatedWave = false;
+  generatedOTPCode = null;
+
+  // Activer le step 1 par défaut
+  goToStep(1);
+
+  // Afficher le modal
   document.getElementById('pay-modal-overlay').classList.add('open');
   document.getElementById('pay-modal').classList.add('open');
-  // Fermer le tiroir panier pour laisser la place au modal
   closeCart();
 }
 
 function closePayModal() {
   document.getElementById('pay-modal-overlay').classList.remove('open');
   document.getElementById('pay-modal').classList.remove('open');
+  if (otpTimerInterval) clearInterval(otpTimerInterval);
 }
 
-// ===========================
-// REGION SELECTOR
-// ===========================
-function onRegionChange() {
-  const sel  = document.getElementById('region-select');
-  const hint = document.getElementById('region-hint');
-  const waveBtn = document.getElementById('btn-wave');
-  const waBtn   = document.getElementById('btn-whatsapp');
+// NAVIGATION ENTRE LES ÉTAPES DU WIZARD
+function goToStep(step) {
+  if (step === 2) {
+    // Validation des données d'expédition de l'Étape 1
+    const name = document.getElementById('shipping-name').value.trim();
+    const phone = document.getElementById('shipping-phone').value.trim();
+    const address = document.getElementById('shipping-address').value.trim();
+    const region = document.getElementById('region-select').value;
 
+    if (!name || !phone || !address || !region) {
+      showToast('⚠️ Veuillez remplir tous les champs obligatoires !');
+      return;
+    }
+    if (phone.replace(/\D/g, '').length < 7) {
+      showToast('⚠️ Veuillez saisir un numéro de téléphone valide !');
+      return;
+    }
+
+    // Générer le QR Code Wave dynamiquement si c'est la première fois ou si le total a changé
+    const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+    const qrWrap = document.getElementById('wave-qr-code');
+    if (qrWrap) {
+      const qrData = encodeURIComponent(`${WAVE_PAYMENT_URL}?amount=${total}&ref=AichayaShop`);
+      qrWrap.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&color=00af9b&data=${qrData}" alt="QR Code Wave" style="width:100%;height:100%;object-fit:contain;" />`;
+    }
+  }
+
+  // Activer la vue correspondante
+  document.querySelectorAll('.pay-step').forEach(el => el.classList.remove('active'));
+  document.getElementById(`pay-step-${step}`).classList.add('active');
+
+  // Mettre à jour la barre de progression (progress steps & lines)
+  const pStep1 = document.getElementById('p-step-1');
+  const pStep2 = document.getElementById('p-step-2');
+  const pStep3 = document.getElementById('p-step-3');
+  const pLine1 = document.getElementById('p-line-1');
+  const pLine2 = document.getElementById('p-line-2');
+
+  const subText = document.getElementById('pay-modal-sub');
+
+  if (step === 1) {
+    pStep1.className = 'progress-step active';
+    pStep2.className = 'progress-step';
+    pStep3.className = 'progress-step';
+    pLine1.className = 'progress-line';
+    pLine2.className = 'progress-line';
+    if (subText) subText.textContent = 'Veuillez renseigner vos coordonnées de livraison.';
+  } else if (step === 2) {
+    pStep1.className = 'progress-step complete';
+    pStep2.className = 'progress-step active';
+    pStep3.className = 'progress-step';
+    pLine1.className = 'progress-line complete';
+    pLine2.className = 'progress-line';
+    if (subText) subText.textContent = 'Sélectionnez et validez votre moyen de paiement sécurisé.';
+  } else if (step === 4) {
+    pStep1.className = 'progress-step complete';
+    pStep2.className = 'progress-step complete';
+    pStep3.className = 'progress-step complete';
+    pLine1.className = 'progress-line complete';
+    pLine2.className = 'progress-line complete';
+    if (subText) subText.textContent = 'Votre commande a été traitée avec succès !';
+  }
+
+  currentPayStep = step;
+}
+
+// SÉLECTION DE LA MÉTHODE DE PAIEMENT (WAVE / ORANGE MONEY / CARTE)
+function switchPayTab(tab) {
+  document.querySelectorAll('.pay-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.pay-tab-content').forEach(el => el.classList.remove('active'));
+
+  document.querySelector(`.pay-tab[data-pay="${tab}"]`).classList.add('active');
+  document.getElementById(`tab-content-${tab}`).classList.add('active');
+
+  currentPayMethod = tab;
+  if (otpTimerInterval) clearInterval(otpTimerInterval);
+}
+
+// REGION CHANGE EVENT (Sert à des effets cosmétiques additionnels si besoin)
+function onRegionChange() {
+  const sel = document.getElementById('region-select');
   if (sel.value) {
     sel.classList.add('selected');
-    hint.textContent = `✅ Région sélectionnée : ${sel.value}`;
-    hint.classList.add('ok');
-    hint.classList.remove('hidden');
-    waveBtn.classList.remove('disabled');
-    waBtn.classList.remove('disabled');
   } else {
     sel.classList.remove('selected');
-    hint.textContent = '⚠️ Veuillez sélectionner votre région pour continuer.';
-    hint.classList.remove('ok');
-    waveBtn.classList.add('disabled');
-    waBtn.classList.add('disabled');
   }
 }
 
-function payByWave() {
-  const region = document.getElementById('region-select').value;
-  if (!region) { showToast('📍 Veuillez sélectionner votre région !'); return; }
-  closePayModal();
-
-  const total     = cart.reduce((s, c) => s + c.price * c.qty, 0);
-  const itemCount = cart.reduce((s, c) => s + c.qty, 0);
-
-  // --- Message WhatsApp avec mention paiement Wave + région ---
-  let msg = '💳 *Commande Wave — L\'univers D\'Aichaya*\n';
-  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += '✅ *Mode de paiement : Wave*\n';
-  msg += `📍 *Région de livraison : ${region}*\n`;
-  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
-
-  cart.forEach((item, i) => {
-    msg += `\n${i + 1}. ${item.emoji} *${item.name}*\n`;
-    msg += `   Quantité : ${item.qty}\n`;
-    msg += `   Prix unitaire : ${fmt(item.price)}\n`;
-    msg += `   Sous-total : ${fmt(item.price * item.qty)}\n`;
-  });
-
-  msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
-  msg += `🚚 Livraison prévue en région *${region}* — paiement via *Wave*.\n`;
-  msg += '📦 Merci de confirmer la réception du paiement et de coordonner la livraison. 🙏';
-
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-
+// ----------------------------------------------------
+// LOGIQUE DE PAIEMENT WAVE SENEGAL
+// ----------------------------------------------------
+function processWavePayment() {
+  hasInitiatedWave = true;
   window.open(WAVE_PAYMENT_URL, '_blank');
-  window.open(waUrl, '_blank');
-
-  showToast('💳 Wave + 📱 WhatsApp ouverts !');
+  showToast("💸 Wave ouvert ! Complétez le transfert puis cliquez sur Vérifier.");
 }
 
-function payByWhatsApp() {
+function verifyWavePayment() {
+  if (!hasInitiatedWave) {
+    showToast("⚠️ Paiement non détecté. Veuillez ouvrir Wave et valider le transfert d'abord.");
+    return;
+  }
+
+  goToStep(3);
+  document.getElementById('loader-title').textContent = 'Interrogation du réseau Wave...';
+  document.getElementById('loader-subtitle').textContent = 'Vérification en cours auprès de Wave Sénégal...';
+
+  setTimeout(() => {
+    createOrder('Wave');
+    goToStep(4);
+  }, 2500);
+}
+
+// ----------------------------------------------------
+// LOGIQUE DE PAIEMENT MOBILE MONEY (ORANGE / FREE)
+// ----------------------------------------------------
+function updateOperatorUI(operator) {
+  activeOperator = operator;
+  const omLabel = document.querySelector('.operator-option.OM');
+  const fmLabel = document.querySelector('.operator-option.FM');
+  
+  if (operator === 'orange') {
+    omLabel.classList.add('active');
+    fmLabel.classList.remove('active');
+    document.getElementById('operator-prefix').textContent = '🇸🇳 +221';
+    document.getElementById('mobile-pay-phone').placeholder = '77 XXXXXXX';
+    document.getElementById('otp-instructions').innerHTML = `🍊 Composez le <strong>#144#</strong> puis choisissez l'option 1 pour valider, ou saisissez le code OTP reçu ci-dessous.`;
+  } else {
+    fmLabel.classList.add('active');
+    omLabel.classList.remove('active');
+    document.getElementById('operator-prefix').textContent = '🇸🇳 +221';
+    document.getElementById('mobile-pay-phone').placeholder = '76 XXXXXXX';
+    document.getElementById('otp-instructions').innerHTML = `🟢 Composez le <strong>#155#</strong> puis choisissez l'option de retrait ou saisissez le code OTP reçu ci-dessous.`;
+  }
+}
+
+function sendMobileOTP() {
+  const phoneInput = document.getElementById('mobile-pay-phone');
+  const phoneVal = phoneInput.value.trim();
+  
+  if (!phoneVal) {
+    showToast('⚠️ Veuillez saisir votre numéro de paiement mobile !');
+    return;
+  }
+  
+  if (phoneVal.replace(/\D/g, '').length < 7) {
+    showToast('⚠️ Numéro de paiement invalide !');
+    return;
+  }
+
+  // Generate random 4-digit code for mock OTP verification
+  generatedOTPCode = String(Math.floor(1000 + Math.random() * 9000));
+  
+  // Alert/Toast simulation
+  alert("📲 [SIMULATION SMS] L'univers d'Aichaya : Votre code de paiement est : " + generatedOTPCode);
+
+  document.getElementById('mobile-phone-step-container').classList.add('hidden');
+  document.getElementById('mobile-otp-step-container').classList.remove('hidden');
+  
+  showToast(`🔑 Code OTP envoyé par SMS au +221 ${phoneVal} !`);
+  
+  let secondsLeft = 120;
+  const countdownEl = document.getElementById('otp-countdown');
+  
+  if (otpTimerInterval) clearInterval(otpTimerInterval);
+  countdownEl.textContent = '02:00';
+  
+  otpTimerInterval = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+      clearInterval(otpTimerInterval);
+      countdownEl.textContent = 'Expiré';
+      showToast('⚠️ Code OTP expiré. Veuillez en demander un nouveau.');
+    } else {
+      const minutes = Math.floor(secondsLeft / 60);
+      const seconds = secondsLeft % 60;
+      countdownEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+  }, 1000);
+}
+
+function validateMobileOTP() {
+  const otpInput = document.getElementById('mobile-otp-code');
+  const otpVal = otpInput.value.trim();
+  
+  if (otpVal.length < 4) {
+    showToast('⚠️ Veuillez saisir le code OTP à 4 chiffres !');
+    return;
+  }
+
+  if (otpVal !== generatedOTPCode) {
+    showToast("⚠️ Code OTP incorrect. Paiement refusé par l'opérateur.");
+    return;
+  }
+
+  if (otpTimerInterval) clearInterval(otpTimerInterval);
+  
+  goToStep(3);
+  const opName = activeOperator === 'orange' ? 'Orange Money' : 'Free Money';
+  document.getElementById('loader-title').textContent = `Validation du code OTP ${opName}...`;
+  document.getElementById('loader-subtitle').textContent = 'Authentification 3D Secure en cours...';
+  
+  setTimeout(() => {
+    createOrder(opName);
+    goToStep(4);
+  }, 2500);
+}
+
+// ----------------------------------------------------
+// LOGIQUE DE PAIEMENT CARTE BANCAIRE & 3D INTERACTIVE
+// ----------------------------------------------------
+function formatCardNumber(input) {
+  let val = input.value.replace(/\D/g, '');
+  let formatted = val.match(/.{1,4}/g);
+  if (formatted) {
+    input.value = formatted.join(' ');
+  } else {
+    input.value = '';
+  }
+  
+  const displayVal = input.value || '•••• •••• •••• ••••';
+  document.getElementById('card-num-display').textContent = displayVal;
+  
+  const logoEl = document.getElementById('card-type-logo');
+  if (val.startsWith('4')) {
+    logoEl.innerHTML = '<i class="fab fa-cc-visa" style="color:#fff;font-size:1.8rem;"></i>';
+  } else if (val.startsWith('5')) {
+    logoEl.innerHTML = '<i class="fab fa-cc-mastercard" style="color:#fff;font-size:1.8rem;"></i>';
+  } else {
+    logoEl.textContent = '💳';
+  }
+}
+
+function updateCardHolder(val) {
+  const displayVal = val.toUpperCase().trim() || 'NOM COMPLET';
+  document.getElementById('card-holder-display').textContent = displayVal;
+}
+
+function formatCardExpiry(input) {
+  let val = input.value.replace(/\D/g, '');
+  if (val.length >= 2) {
+    input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+  } else {
+    input.value = val;
+  }
+  
+  const displayVal = input.value || 'MM/AA';
+  document.getElementById('card-expiry-display').textContent = displayVal;
+}
+
+function flipCard(isBack) {
+  const card = document.getElementById('credit-card-3d');
+  if (card) {
+    if (isBack) {
+      card.classList.add('flipped');
+    } else {
+      card.classList.remove('flipped');
+    }
+  }
+}
+
+function updateCardCVV(val) {
+  const displayVal = val.replace(/\D/g, '') || '•••';
+  document.getElementById('card-cvv-display').textContent = displayVal;
+}
+
+function processCardPayment() {
+  const num = document.getElementById('card-number').value.trim();
+  const holder = document.getElementById('card-holder').value.trim();
+  const expiry = document.getElementById('card-expiry').value.trim();
+  const cvv = document.getElementById('card-cvv').value.trim();
+  
+  if (num.replace(/\s/g, '').length < 16) {
+    showToast('⚠️ Numéro de carte bancaire incomplet !');
+    return;
+  }
+  if (!holder) {
+    showToast('⚠️ Nom du titulaire requis !');
+    return;
+  }
+  if (expiry.length < 5) {
+    showToast('⚠️ Date d\'expiration invalide (MM/AA) !');
+    return;
+  }
+  if (cvv.length < 3) {
+    showToast('⚠️ Code CVV invalide !');
+    return;
+  }
+  
+  const cleanNum = num.replace(/\s/g, '');
+  if (cleanNum.endsWith('0000')) {
+    goToStep(3);
+    document.getElementById('loader-title').textContent = 'Autorisation bancaire 3D Secure...';
+    document.getElementById('loader-subtitle').textContent = 'Vérification des fonds en cours...';
+    
+    setTimeout(() => {
+      goToStep(2);
+      showToast('❌ Refus : Solde insuffisant ou carte invalide (Code: 110).');
+    }, 2500);
+    return;
+  }
+
+  goToStep(3);
+  document.getElementById('loader-title').textContent = 'Autorisation bancaire 3D Secure...';
+  document.getElementById('loader-subtitle').textContent = 'Vérification des fonds en cours...';
+  
+  setTimeout(() => {
+    createOrder('Carte Bancaire');
+    goToStep(4);
+  }, 3000);
+}
+
+// ----------------------------------------------------
+// REÇUS ET SYNCHRONISATION COMMANDE
+// ----------------------------------------------------
+function generateOrderRef() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let rand = '';
+  for (let i = 0; i < 4; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `ACH-${new Date().getFullYear()}-${rand}`;
+}
+
+function createOrder(method) {
+  const name = document.getElementById('shipping-name').value.trim();
+  const phone = document.getElementById('shipping-phone').value.trim();
+  const address = document.getElementById('shipping-address').value.trim();
   const region = document.getElementById('region-select').value;
-  if (!region) { showToast('📍 Veuillez sélectionner votre région !'); return; }
-  closePayModal();
-
-  const total     = cart.reduce((s, c) => s + c.price * c.qty, 0);
-  const itemCount = cart.reduce((s, c) => s + c.qty, 0);
-
-  let msg = '🛍️ *Nouvelle Commande — L\'univers D\'Aichaya*\n';
-  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += `📍 *Région de livraison : ${region}*\n`;
-  msg += '━━━━━━━━━━━━━━━━━━━━━━\n';
-
-  cart.forEach((item, i) => {
-    msg += `\n${i + 1}. ${item.emoji} *${item.name}*\n`;
-    msg += `   Quantité : ${item.qty}\n`;
-    msg += `   Prix unitaire : ${fmt(item.price)}\n`;
-    msg += `   Sous-total : ${fmt(item.price * item.qty)}\n`;
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const ref = generateOrderRef();
+  const dateStr = new Date().toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
   });
 
-  msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n';
-  msg += `💰 *TOTAL : ${fmt(total)}* (${itemCount} article${itemCount > 1 ? 's' : ''})\n\n`;
-  msg += `🚚 Livraison en région *${region}* — merci de confirmer et de coordonner l'adresse exacte. 🙏`;
+  lastCreatedOrder = {
+    ref,
+    date: dateStr,
+    client: name,
+    phone: `+221 ${phone}`,
+    address,
+    region,
+    method,
+    items: [...cart],
+    total
+  };
 
+  document.getElementById('success-order-ref').textContent = `#${ref}`;
+  document.getElementById('success-order-date').textContent = dateStr;
+  document.getElementById('success-order-client').textContent = name;
+  document.getElementById('success-order-phone').textContent = `+221 ${phone}`;
+  document.getElementById('success-order-region').textContent = region;
+  document.getElementById('success-order-method').textContent = method;
+  document.getElementById('success-order-total').textContent = fmt(total);
+
+  const itemsList = document.getElementById('invoice-items-list');
+  if (itemsList) {
+    itemsList.innerHTML = cart.map(item => `
+      <div class="invoice-item-line">
+        <span class="inv-item-name">${item.name} x${item.qty}</span>
+        <span class="inv-item-price">${fmt(item.price * item.qty)}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function downloadReceipt() {
+  window.print();
+}
+
+function syncWithWhatsApp() {
+  if (!lastCreatedOrder) return;
+  
+  const o = lastCreatedOrder;
+  let msg = `✨ *NOUVELLE COMMANDE - L'UNIVERS D'AICHAYA* ✨\n\n`;
+  msg += `🏷️ *Référence :* #${o.ref}\n`;
+  msg += `📅 *Date :* ${o.date}\n`;
+  msg += `👤 *Client :* ${o.client}\n`;
+  msg += `📞 *Téléphone :* ${o.phone}\n`;
+  msg += `📍 *Adresse :* ${o.address}, ${o.region}\n`;
+  msg += `💳 *Paiement :* ${o.method} (Confirmé)\n\n`;
+  
+  msg += `🛍️ *Articles commandés :*\n`;
+  o.items.forEach(item => {
+    msg += `• ${item.qty}x ${item.name} (${fmt(item.price * item.qty)})\n`;
+  });
+  
+  msg += `\n💰 *Total Payé :* *${fmt(o.total)}*\n\n`;
+  msg += `🚚 _Merci de bien vouloir préparer ma livraison pour la région de *${o.region}* ! A bientôt._ 🌸`;
+  
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
+}
+
+function resetCart() {
+  cart = [];
+  saveCart();
+  renderCartItems();
+  
+  document.getElementById('mobile-phone-step-container').classList.remove('hidden');
+  document.getElementById('mobile-otp-step-container').classList.add('hidden');
+  document.getElementById('mobile-otp-code').value = '';
+  document.getElementById('mobile-pay-phone').value = '';
+  
+  document.getElementById('card-number').value = '';
+  document.getElementById('card-holder').value = '';
+  document.getElementById('card-expiry').value = '';
+  document.getElementById('card-cvv').value = '';
+  document.getElementById('card-num-display').textContent = '•••• •••• •••• ••••';
+  document.getElementById('card-holder-display').textContent = 'NOM COMPLET';
+  document.getElementById('card-expiry-display').textContent = 'MM/AA';
+  document.getElementById('card-cvv-display').textContent = '•••';
+  document.getElementById('card-type-logo').textContent = '💳';
+  
+  const card3d = document.getElementById('credit-card-3d');
+  if (card3d) card3d.classList.remove('flipped');
 }
 
 // ===========================
@@ -676,125 +992,6 @@ function observeReveal() {
 }
 
 // ===========================
-// HERO 3D SCENE (Three.js) - MAJESTIC EDITION
-// ===========================
-function initHero3D() {
-  const container = document.getElementById('hero-3d-container');
-  if (!container || typeof THREE === 'undefined') return;
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-  camera.position.z = 6; // Un peu plus de recul pour la majesté
-
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, logarithmicDepthBuffer: true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  container.appendChild(renderer.domElement);
-
-  const group = new THREE.Group();
-  scene.add(group);
-
-  // 1. Luxueux bracelet majestueux (Nœud torique plus complexe)
-  const geometry = new THREE.TorusKnotGeometry(1.4, 0.3, 300, 150, 3, 5);
-  const material = new THREE.MeshStandardMaterial({
-    color: 0xd4a853, // Or pur
-    metalness: 1.0,
-    roughness: 0.15,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  group.add(mesh);
-
-  // 2. Halo magique / Fil d'or très fin autour
-  const wireGeometry = new THREE.TorusKnotGeometry(1.5, 0.08, 100, 30, 3, 5);
-  const wireMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.15
-  });
-  const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
-  group.add(wireMesh);
-
-  // 3. Poussière d'étoiles dorées (Particules)
-  const particlesGeo = new THREE.BufferGeometry();
-  const particlesCount = 500;
-  const posArray = new Float32Array(particlesCount * 3);
-  for(let i=0; i<particlesCount*3; i++) {
-    // Sphère de 8 unités de large
-    posArray[i] = (Math.random() - 0.5) * 9; 
-  }
-  particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-  const particlesMat = new THREE.PointsMaterial({
-    size: 0.035,
-    color: 0xd4a853,
-    transparent: true,
-    opacity: 0.8,
-    blending: THREE.AdditiveBlending
-  });
-  const particles = new THREE.Points(particlesGeo, particlesMat);
-  scene.add(particles);
-
-  // Lumières Divines
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6)); // Un peu moins d'ambient pour accentuer le contraste
-
-  const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.5);
-  dirLight1.position.set(5, 5, 5);
-  scene.add(dirLight1);
-
-  const dirLight2 = new THREE.DirectionalLight(0xc9847a, 3.0); // Rose gold très fort
-  dirLight2.position.set(-5, -5, 5);
-  scene.add(dirLight2);
-  
-  const bottomLight = new THREE.DirectionalLight(0xffffff, 1.0); // Lumière d'en dessous
-  bottomLight.position.set(0, -5, 0);
-  scene.add(bottomLight);
-
-  let mouseX = 0, mouseY = 0;
-  let targetX = 0, targetY = 0;
-  const windowHalfX = window.innerWidth / 2;
-  const windowHalfY = window.innerHeight / 2;
-
-  document.addEventListener('mousemove', (event) => {
-    mouseX = (event.clientX - windowHalfX) * 0.001;
-    mouseY = (event.clientY - windowHalfY) * 0.001;
-  });
-
-  function animate() {
-    requestAnimationFrame(animate);
-    
-    // Smooth interaction (parallaxe majestueuse, plus lente)
-    targetX = mouseX * 0.5;
-    targetY = mouseY * 0.5;
-    
-    // Rotation automatique LENTE ET MAJESTUEUSE
-    mesh.rotation.y += 0.0015;
-    mesh.rotation.x += 0.0005;
-
-    wireMesh.rotation.y -= 0.001; // Contre-rotation magique
-    wireMesh.rotation.x += 0.0015;
-    
-    particles.rotation.y -= 0.0005; // Tourbillon d'étoiles
-    
-    // Parallaxe à la souris
-    group.rotation.y += 0.02 * (targetX - group.rotation.y);
-    group.rotation.x += 0.02 * (targetY - group.rotation.x);
-    
-    particles.rotation.y += 0.005 * (targetX - particles.rotation.y);
-    particles.rotation.x += 0.005 * (targetY - particles.rotation.x);
-
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  window.addEventListener('resize', () => {
-    if (!container) return;
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-  });
-}
-
-// ===========================
 // INIT
 // ===========================
 document.addEventListener('DOMContentLoaded', () => {
@@ -804,7 +1001,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartUI();
   runCountdown();
   observeReveal();
-  initHero3D();
 
   // Mobile nav styles (inject dynamically)
   const style = document.createElement('style');
