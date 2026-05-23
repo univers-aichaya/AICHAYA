@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des commandes – Admin</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body { background: #f9f9f9; font-family: 'Inter', sans-serif; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 1rem; background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+        h1 { text-align:center; margin-bottom:1.5rem; color:#333; }
+        table { width:100%; border-collapse:collapse; }
+        th, td { padding:0.75rem; border-bottom:1px solid #e0e0e0; text-align:left; }
+        th { background:#f0f0f0; }
+        tr:hover { background:#fafafa; }
+        .status { font-weight:bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Gestion des commandes clients</h1>
+        <table id="orders-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Sujet</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données seront injectées par JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        async function loadOrders() {
+            try {
+                const res = await fetch('/admin/api/orders');
+                if (!res.ok) throw new Error('Erreur lors du chargement');
+                const orders = await res.json();
+                const tbody = document.querySelector('#orders-table tbody');
+                tbody.innerHTML = '';
+                orders.forEach((o, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${o.client_name}</td>
+                        <td>${o.client_email}</td>
+                        <td>${o.phone}</td>
+                        <td>${o.subject}</td>
+                        <td>${o.message}</td>
+                        <td>${new Date(o.created_at).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error(e);
+                alert('Impossible de récupérer les commandes. Vérifiez vos identifiants admin.');
+            }
+        }
+        loadOrders();
+    </script>
+</body>
+</html>
