@@ -29,6 +29,8 @@
                     <th>Sujet</th>
                     <th>Message</th>
                     <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,6 +56,8 @@
                         <td>${o.subject}</td>
                         <td>${o.message}</td>
                         <td>${new Date(o.created_at).toLocaleString()}</td>
+                        <td class="status">${o.status || 'en attente'}</td>
+                        <td><button onclick="updateStatus(${o.id}, 'traité')">Marquer comme traité</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -63,6 +67,23 @@
             }
         }
         loadOrders();
+
+        // Met à jour le statut d'une commande
+        async function updateStatus(id, newStatus) {
+            try {
+                const resp = await fetch(`/admin/api/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (!resp.ok) throw new Error('Erreur mise à jour');
+                // Recharger la liste pour refléter le changement
+                loadOrders();
+            } catch (e) {
+                console.error(e);
+                alert('Impossible de mettre à jour le statut');
+            }
+        }
     </script>
 </body>
 </html>
